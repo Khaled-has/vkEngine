@@ -59,18 +59,19 @@ public:
 
 	inline static VK_Device* Get() { return pDeviceInstance; }
 
-	INLINE_CON VkInstance& getInstance() { return m_pInstance; }
-	INLINE_CON VkSurfaceKHR getSurface() { return m_pSurface; }
-	INLINE_CON VkDevice& getDevice() { return m_pDevice; }
-	INLINE_CON VK_PhysDeviceProps& getSelectedPhysDevice() { return m_pPhysDevices[m_selectedPhysDevIndex]; }
-	INLINE_CON VmaAllocator& getAllocator() { return m_pAllocator; }
-	INLINE_CON auto& getQueues() { return m_pQueues; }
+	INLINE_CON VkInstance& getInstance() const { return m_pInstance; }
+	INLINE_CON VkSurfaceKHR getSurface() const { return m_pSurface; }
+	INLINE_CON VkDevice& getDevice() const { return m_pDevice; }
+	INLINE_CON VK_PhysDeviceProps& getSelectedPhysDevice() const { return m_pPhysDevices[m_selectedPhysDevIndex]; }
+	INLINE_CON VmaAllocator& getAllocator() const { return m_pAllocator; }
+	INLINE_CON auto& getQueues() const { return m_pQueues; }
 
 private:
 	inline static VK_Device* pDeviceInstance;
 
 	// # Vulkan components
 	VkInstance m_pInstance = VK_NULL_HANDLE;
+	VkDebugUtilsMessengerEXT m_pDebugMessenger = VK_NULL_HANDLE;
 	VkSurfaceKHR m_pSurface = VK_NULL_HANDLE;
 	VkDevice m_pDevice = VK_NULL_HANDLE;
 	VmaAllocator m_pAllocator = VK_NULL_HANDLE;
@@ -79,16 +80,17 @@ private:
 	uint32_t m_selectedPhysDevIndex = 0;
 
 	struct {
-		VK_Queue* mGraphics;
-		VK_Queue* mCompute;
-		VK_Queue* mTransfer;
-		VK_Queue* mPresent;
+		VK_Queue* mGraphics = nullptr;
+		VK_Queue* mCompute = nullptr;
+		VK_Queue* mTransfer = nullptr;
+		VK_Queue* mPresent = nullptr;
 	} m_pQueues;
 
 	uint32_t m_pInstanceVersion = 0;
 
 	// # Create functions
 	void CreateInstance();
+	void CreateDebugMessenger();
 	void EnumeratePhysicalDevices();
 	void CreateDevice();
 	void CreateAllocator();

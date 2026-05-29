@@ -64,7 +64,7 @@ void VK_SwapChain::Destroy()
 	// # Destroy image views
 	for (auto& Im : m_pImageViews)
 	{
-		vkDestroyImageView(Device, Im, NULL);
+		Im.DestroyView();
 	}
 
 	m_pImages.clear();
@@ -132,8 +132,9 @@ void VK_SwapChain::CreateSwapchain(const VK_SwapChainInfo mInfo)
 	// # Create swapchain image views
 	for (uint32_t i = 0; i < m_pImageViews.size(); i++)
 	{
-		m_pImageViews[i] = CreateImageView(
-			m_pImages[i], Device->getDevice(), m_pSurfaceFormat.format, VK_IMAGE_ASPECT_COLOR_BIT
+		m_pImageViews[i].CreateView(
+			m_pImages[i], m_pSurfaceFormat.format, VK_IMAGE_VIEW_TYPE_2D, 
+			VK_IMAGE_ASPECT_COLOR_BIT, 1u
 		);
 	}
 }

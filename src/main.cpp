@@ -23,8 +23,8 @@ int main(int argc, char* argv[])
 		}
 	});
 
-	//VK_SwapChain mSwapChain;
-	//mSwapChain.Create({.mEnableDepth = false, .mEnableVSync = true});
+	VK_SwapChain mSwapChain;
+	mSwapChain.Create({.mEnableDepth = false, .mEnableVSync = true});
 
 	bool pRunning = true;
 	SDL_Event ev;
@@ -38,6 +38,8 @@ int main(int argc, char* argv[])
 
 	}
 
+	mSwapChain.Destroy();
+	mDevice.Destroy();
 
 	return 0;
 }

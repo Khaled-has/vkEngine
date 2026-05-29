@@ -24,8 +24,8 @@ set(VMA_DIR "${CMAKE_SOURCE_DIR}/extern/vma")
 add_executable(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME} PRIVATE
-	"${VOLK_DIR}/volk.cpp"
-	"src/main.cpp" "src/vk/VK_Device.cpp" "src/vk/log.cpp" "src/vk/VK_SwapChain.cpp" "src/vk/VK_Queue.cpp")
+	"${VOLK_DIR}/volk.c"
+	"src/main.cpp" "src/vk/VK_Device.cpp" "src/vk/log.cpp" "src/vk/VK_SwapChain.cpp" "src/vk/VK_Queue.cpp" "src/vk/VK_Texture.cpp")
 
 # == Include directories
 target_include_directories(${PROJECT_NAME} PRIVATE

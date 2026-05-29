@@ -23,6 +23,6 @@ private:
 #define LOG_WARN(...)     ::Log::GetLogger()->warn(__VA_ARGS__)
 #define LOG_ERROR(...)    ::Log::GetLogger()->error(__VA_ARGS__)
 
-#define ASSERT(x, ...)		 { if (!x) { Log::GetLogger()->error("Assert error: {0}", __VA_ARGS__); __debugbreak(); } }
+#define ASSERT(x, ...)		 { if (!(x)) { Log::GetLogger()->error("Assert error: {0}", __VA_ARGS__); __debugbreak(); } }
 
 #endif

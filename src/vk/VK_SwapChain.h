@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-#include "VK_Device.h"
+#include "VK_Texture.h"
 
 #define INLINE_CON inline const
 
@@ -23,7 +23,7 @@ public:
 	void Destroy();
 
 	INLINE_CON std::vector<VkImage>& getImages() { return m_pImages; }
-	INLINE_CON std::vector<VkImageView>& getImageViews() { return m_pImageViews; }
+	INLINE_CON std::vector<VK_TextureView>& getImageViews() { return m_pImageViews; }
 
 	INLINE_CON VkFormat getColorImageFormat() { return m_pSurfaceFormat.format; }
 
@@ -31,12 +31,12 @@ private:
 	VkSwapchainKHR m_pSwapchain = VK_NULL_HANDLE;
 
 	std::vector<VkImage> m_pImages;
-	std::vector<VkImageView> m_pImageViews;
+	std::vector<VK_TextureView> m_pImageViews;
 
 	VkSurfaceFormatKHR m_pSurfaceFormat{};
 
-	std::vector<VkImage> m_pDepthImages;
-	std::vector<VkImageView> m_pDepthImageViews;
+	//std::vector<VkImage> m_pDepthImages;
+	//std::vector<VkImageView> m_pDepthImageViews;
 
 	void CreateSwapchain(const VK_SwapChainInfo mInfo);
 };

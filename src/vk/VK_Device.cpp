@@ -9,10 +9,18 @@
 
 std::string GetDeviceType(VkPhysicalDeviceType pType);
 VkFormat FindDepthFormat(VkPhysicalDevice Device);
+static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
+	VkDebugUtilsMessageSeverityFlagBitsEXT Severity,
+	VkDebugUtilsMessageTypeFlagsEXT Type,
+	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+	void* pUserData);
 
 bool VK_Device::Initialize(std::function<void(VkSurfaceKHR* pSurface, VkInstance pInstance)> CreateSurface)
 {
 	CreateInstance();
+#if defined  (_DEBUG) && !(__android__)
+	CreateDebugMessenger();
+#endif
 	CreateSurface(&m_pSurface, m_pInstance);
 	EnumeratePhysicalDevices();
 	CreateDevice();
@@ -32,9 +40,11 @@ void VK_Device::Destroy()
 	// # : Destroy surface
 	vkDestroySurfaceKHR(m_pInstance, m_pSurface, NULL);
 
+	// # : Destroy debug messenger utils
+	vkDestroyDebugUtilsMessengerEXT(m_pInstance, m_pDebugMessenger, NULL);
+
 	// # : Destroy instance
 	vkDestroyInstance(m_pInstance, NULL);
-	
 }
 
 void VK_Device::CreateInstance()
@@ -92,6 +102,33 @@ void VK_Device::CreateInstance()
 	CHECK_VK_RES(vkCreateInstance(&instInfo, NULL, &m_pInstance), "vkCreateInstance");
 	// # volk: load instance
 	volkLoadInstance(m_pInstance);
+}
+
+void VK_Device::CreateDebugMessenger()
+{
+	VkDebugUtilsMessengerCreateInfoEXT MessengerCreateInfo = {
+			.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+			.pNext = NULL,
+
+			.messageSeverity =
+			VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+			VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+
+			.messageType =
+			VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+			VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+
+			.pfnUserCallback = &DebugCallback,
+			.pUserData = NULL
+	};
+
+	if (!vkCreateDebugUtilsMessengerEXT)
+	{
+		LOG_ERROR("Cannot find address of vkCreateDebugUtilsMessengerKHR");
+		exit(1);
+	}
+
+	CHECK_VK_RES(vkCreateDebugUtilsMessengerEXT(m_pInstance, &MessengerCreateInfo, NULL, &m_pDebugMessenger), "vkCreateDebugUtilsMessenger");
 }
 
 void VK_Device::EnumeratePhysicalDevices()
@@ -176,35 +213,35 @@ void VK_Device::EnumeratePhysicalDevices()
 
 		CHECK_VK_RES(vkGetPhysicalDeviceSurfaceFormatsKHR(PhyDev, m_pSurface, &NumFormats, m_pPhysDevices[i].m_surfaceFormats.data()), "vkGetPhysicalDeviceSurfaceFormatsKHR");
 
-//LOG_TRACE("======> Physical device ( {0} ) surface formats <======", i);
-//for (auto& fo : m_pPhysDevices[i].m_surfaceFormats)
-//{
-//	LOG_INFO("	{0}", fo.format);
-//}
-//LOG_TRACE("==================================");
-
-// # Device surface capabilities
-CHECK_VK_RES(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(PhyDev, m_pSurface, &(m_pPhysDevices[i].m_surfaceCaps)), "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
-
-// # Device present modes
-uint32_t NumPresentModes = 0;
-CHECK_VK_RES(vkGetPhysicalDeviceSurfacePresentModesKHR(PhyDev, m_pSurface, &NumPresentModes, NULL), "vkGetPhysicalDeviceSurfacePresentModesKHR");
-ASSERT(NumPresentModes > 0, "Num present modes = 0");
-
-m_pPhysDevices[i].m_presentModes.resize(NumPresentModes);
-
-CHECK_VK_RES(vkGetPhysicalDeviceSurfacePresentModesKHR(PhyDev, m_pSurface, &NumPresentModes, m_pPhysDevices[i].m_presentModes.data()), "vkGetPhysicalDeviceSurfacePresentModesKHR");
-
-LOG_INFO("Number of presentation modes {0}", NumPresentModes);
-
-// # Device memory properties
-vkGetPhysicalDeviceMemoryProperties(PhyDev, &(m_pPhysDevices[i].m_memProps));
-
-// # Device features
-vkGetPhysicalDeviceFeatures(PhyDev, &(m_pPhysDevices[i].m_features));
-
-// # Device depth format
-m_pPhysDevices[i].m_depthFormat = FindDepthFormat(PhyDev);
+		//LOG_TRACE("======> Physical device ( {0} ) surface formats <======", i);
+		//for (auto& fo : m_pPhysDevices[i].m_surfaceFormats)
+		//{
+		//	LOG_INFO("	{0}", fo.format);
+		//}
+		//LOG_TRACE("==================================");
+		
+		// # Device surface capabilities
+		CHECK_VK_RES(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(PhyDev, m_pSurface, &(m_pPhysDevices[i].m_surfaceCaps)), "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
+		
+		// # Device present modes
+		uint32_t NumPresentModes = 0;
+		CHECK_VK_RES(vkGetPhysicalDeviceSurfacePresentModesKHR(PhyDev, m_pSurface, &NumPresentModes, NULL), "vkGetPhysicalDeviceSurfacePresentModesKHR");
+		ASSERT(NumPresentModes > 0, "Num present modes = 0");
+		
+		m_pPhysDevices[i].m_presentModes.resize(NumPresentModes);
+		
+		CHECK_VK_RES(vkGetPhysicalDeviceSurfacePresentModesKHR(PhyDev, m_pSurface, &NumPresentModes, m_pPhysDevices[i].m_presentModes.data()), "vkGetPhysicalDeviceSurfacePresentModesKHR");
+		
+		LOG_INFO("Number of presentation modes {0}", NumPresentModes);
+		
+		// # Device memory properties
+		vkGetPhysicalDeviceMemoryProperties(PhyDev, &(m_pPhysDevices[i].m_memProps));
+		
+		// # Device features
+		vkGetPhysicalDeviceFeatures(PhyDev, &(m_pPhysDevices[i].m_features));
+		
+		// # Device depth format
+		m_pPhysDevices[i].m_depthFormat = FindDepthFormat(PhyDev);
 	}
 
 	// # Select physical device
@@ -217,10 +254,21 @@ m_pPhysDevices[i].m_depthFormat = FindDepthFormat(PhyDev);
 			if ((QFamilyProp.queueFlags & VK_QUEUE_GRAPHICS_BIT) && ((bool)m_pPhysDevices[i].m_qSupportsPresent[j] == VK_TRUE))
 			{
 				m_selectedPhysDevIndex = i;
-				LOG_INFO(
-					"Using GFX device {0}",
-					i
-				);
+
+				if (m_pPhysDevices[i].m_devProps.deviceType != VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+				{
+					LOG_INFO(
+						"Using GFX device {0}",
+						i
+					);
+				}
+				else if (i <= m_pPhysDevices.size() - 1)
+				{
+					LOG_INFO(
+						"Using GFX device {0}",
+						i
+					);
+				}
 			}
 		}
 	}
@@ -250,7 +298,11 @@ void VK_Device::CreateAllocator()
 
 std::vector<const char*> VK_Device::getDeviceExtensions()
 {
-	std::vector<const char*> result;
+	std::vector<const char*> result = {
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+		VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME
+	};
+
 	VK_PhysDeviceProps& PhyDev = m_pPhysDevices[m_selectedPhysDevIndex];
 
 	bool DeviceSupportsDynamicRendering = PhyDev.IsExtensionSupported(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
@@ -362,6 +414,17 @@ void VK_Device::CreateDevice()
 		}
 	}
 
+	// # Create queues
+	ASSERT(graphicsQFamilyIndex != -1, "Missing Vulkan queue graphics");
+
+	m_pQueues.mGraphics = new VK_Queue(graphicsQFamilyIndex);
+	m_pQueues.mCompute = computeQFamilyIndex == -1 ? m_pQueues.mGraphics : new VK_Queue(computeQFamilyIndex);
+	m_pQueues.mTransfer = transferQFamilyIndex == -1 ? m_pQueues.mGraphics : new VK_Queue(transferQFamilyIndex);
+	m_pQueues.mPresent = m_pQueues.mGraphics;
+
+	if (computeQFamilyIndex == -1) LOG_INFO("Use the graphics queue is a compute queue also");
+	if (transferQFamilyIndex == -1) LOG_INFO("Use the graphics queue is a transfer queue also");
+
 	// # Device extensions support
 	const std::vector<const char*> extensions = getDeviceExtensions();
 
@@ -414,22 +477,22 @@ std::string GetDeviceType(VkPhysicalDeviceType pType)
 	std::string result = "";
 
 	if ((pType & VK_PHYSICAL_DEVICE_TYPE_OTHER) == VK_PHYSICAL_DEVICE_TYPE_OTHER)
-		result += "Other";
+		result += "Other\t";
 
 	if ((pType & VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
-		result += "Integrated GPU";
+		result += "Integrated GPU\t";
 
 	if ((pType & VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-		result += "Discrete GPU";
+		result += "Discrete GPU\t";
 
 	if ((pType & VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU) == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU)
-		result += "Virtual GPU";
+		result += "Virtual GPU\t";
 
 	if ((pType & VK_PHYSICAL_DEVICE_TYPE_CPU) == VK_PHYSICAL_DEVICE_TYPE_CPU)
-		result += "CPU";
+		result += "CPU\t";
 
 	if ((pType & VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM) == VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM)
-		result += "Max Enum";
+		result += "Max Enum\t";
 
 	return result;
 }
@@ -478,4 +541,100 @@ VkFormat FindDepthFormat(VkPhysicalDevice Device)
 	);
 
 	return DepthFormat;
+}
+
+const char* GetDebugType(VkDebugUtilsMessageTypeFlagsEXT Type)
+{
+
+	switch (Type) {
+	case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
+		return "General";
+
+	case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
+		return "Validation";
+
+	case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
+		return "Performance";
+
+#ifdef _WIN64 // doesn't work on my Linux for some reason
+	case VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT:
+		return "Device address binding";
+#endif
+
+	default:
+		LOG_ERROR("Invalid type code {0}\n", static_cast<uint32_t>(Type));
+		exit(1);
+	}
+
+	return "NO SUCH TYPE!";
+}
+
+const char* GetDebugSeverityStr(VkDebugUtilsMessageSeverityFlagBitsEXT Severity)
+{
+
+	switch (Severity) {
+	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+		return "Verbose";
+
+	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+		return "Info";
+
+	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+		return "Warning";
+
+	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+		return "Error";
+
+	default:
+		LOG_ERROR("Invalid severity code");
+		exit(1);
+	}
+
+	return "NO SUCH SEVERITY!";
+}
+
+static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
+	VkDebugUtilsMessageSeverityFlagBitsEXT Severity,
+	VkDebugUtilsMessageTypeFlagsEXT Type,
+	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+	void* pUserData)
+{
+	std::string pT = GetDebugSeverityStr(Severity);
+	if (pT == "Error")
+	{
+		LOG_ERROR("Debug callback: {0} \n		Severity {1}\n			Type {2}\n		   Object ",
+			pCallbackData->pMessage, GetDebugSeverityStr(Severity), GetDebugType(Type)
+		);
+	}
+	else
+	{
+		LOG_TRACE("Debug callback: {0} \n		Severity {1}\n			Type {2}\n		   Object ",
+			pCallbackData->pMessage, GetDebugSeverityStr(Severity), GetDebugType(Type)
+		);
+	}
+
+
+	for (uint32_t i = 0; i < pCallbackData->objectCount; i++) {
+#ifdef _WIN32
+		if (pT == "Error")
+		{
+			LOG_ERROR("{0}", pCallbackData->pObjects[i].objectHandle);
+		}
+		else
+		{
+			LOG_TRACE("{0}", pCallbackData->pObjects[i].objectHandle);
+		}
+#else
+		if (std::string(GetDebugSeverityStr(Severity)) == "Error")
+		{
+			LOG_ERROR("{0}", pCallbackData->pObjects[i].objectHandle);
+		}
+		else
+		{
+			LOG_TRACE("{0}", pCallbackData->pObjects[i].objectHandle);
+		}
+#endif
+	}
+
+	return VK_FALSE;  // The calling function should not be aborted
 }
