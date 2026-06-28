@@ -1,8 +1,7 @@
 #include "VK_SwapChain.h"
 
 #include "config.h"
-
-#include <volk.h>
+#include "VK_Device.h"
 
 uint32_t ChooseNumImages(const VkSurfaceCapabilitiesKHR& Capabilities)
 {
@@ -62,13 +61,13 @@ void VK_SwapChain::Destroy()
 	const VkDevice& Device = VK_Device::Get()->getDevice();
 
 	// # Destroy image views
-	for (auto& Im : m_pImageViews)
+	for (auto& Im : m_pTextures)
 	{
 		Im.DestroyView();
 	}
 
 	m_pImages.clear();
-	m_pImageViews.clear();
+	m_pTextures.clear();
 
 	// # Destroy swapchain
 	vkDestroySwapchainKHR(Device, m_pSwapchain, NULL);
@@ -82,7 +81,7 @@ void VK_SwapChain::CreateSwapchain(const VK_SwapChainInfo mInfo)
 	VkSurfaceCapabilitiesKHR SurfaceCaps;
 	CHECK_VK_RES(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(Device->getSelectedPhysDevice().m_pPhysDev, Device->getSurface(), &SurfaceCaps), "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
 
-	uint32_t NumImages = ChooseNumImages(SurfaceCaps);
+	m_pSwapImages = ChooseNumImages(SurfaceCaps);
 
 	// # Choose present mode
 	const std::vector<VkPresentModeKHR> PresentModes = Device->getSelectedPhysDevice().m_presentModes;
@@ -101,7 +100,7 @@ void VK_SwapChain::CreateSwapchain(const VK_SwapChainInfo mInfo)
 		.pNext = NULL,
 		.flags = 0,
 		.surface = Device->getSurface(),
-		.minImageCount = NumImages,
+		.minImageCount = m_pSwapImages,
 		.imageFormat = m_pSurfaceFormat.format,
 		.imageColorSpace = m_pSurfaceFormat.colorSpace,
 		.imageExtent = SurfaceCaps.currentExtent,
@@ -121,18 +120,19 @@ void VK_SwapChain::CreateSwapchain(const VK_SwapChainInfo mInfo)
 	// # Get the swapchain's images
 	uint32_t NumSwapChainImages = 0;
 	CHECK_VK_RES(vkGetSwapchainImagesKHR(Device->getDevice(), m_pSwapchain, &NumSwapChainImages, NULL), "vkGetSwapchainImagesKHR");
-	NumImages = NumSwapChainImages;
-	//assert(NumImages == NumSwapChainImages);
+	m_pSwapImages = NumSwapChainImages;
+	ASSERT(m_pSwapImages == NumSwapChainImages, "Num swapchain images != NumSwapChainImages");
 
 	m_pImages.resize(NumSwapChainImages);
-	m_pImageViews.resize(NumSwapChainImages);
 
 	CHECK_VK_RES(vkGetSwapchainImagesKHR(Device->getDevice(), m_pSwapchain, &NumSwapChainImages, m_pImages.data()), "vkGetSwapchainImagesKHR");
 
 	// # Create swapchain image views
-	for (uint32_t i = 0; i < m_pImageViews.size(); i++)
+	for (uint32_t i = 0; i < m_pImages.size(); i++)
 	{
-		m_pImageViews[i].CreateView(
+		m_pTextures.push_back(VK_Texture{ m_pImages[i], m_pSurfaceFormat.format });
+
+		m_pTextures[i].CreateView(
 			m_pImages[i], m_pSurfaceFormat.format, VK_IMAGE_VIEW_TYPE_2D, 
 			VK_IMAGE_ASPECT_COLOR_BIT, 1u
 		);

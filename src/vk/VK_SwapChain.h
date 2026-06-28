@@ -6,8 +6,6 @@
 
 #include "VK_Texture.h"
 
-#define INLINE_CON inline const
-
 struct VK_SwapChainInfo 
 {
 	bool mEnableDepth = false;
@@ -22,21 +20,25 @@ public:
 	void Create(const VK_SwapChainInfo mInfo);
 	void Destroy();
 
-	INLINE_CON std::vector<VkImage>& getImages() { return m_pImages; }
-	INLINE_CON std::vector<VK_TextureView>& getImageViews() { return m_pImageViews; }
+	inline uint32_t getSwapChainImageCount() const { return m_pSwapImages; }
 
-	INLINE_CON VkFormat getColorImageFormat() { return m_pSurfaceFormat.format; }
+	inline const VkSwapchainKHR& getSwapchain() const { return m_pSwapchain; }
+
+	inline const std::vector<VkImage>& getImages() const { return m_pImages; }
+
+	inline const std::vector<VK_Texture>& getSwapChainTextures() const { return m_pTextures; }
+
+	inline VkFormat getColorImageFormat() { return m_pSurfaceFormat.format; }
 
 private:
 	VkSwapchainKHR m_pSwapchain = VK_NULL_HANDLE;
 
 	std::vector<VkImage> m_pImages;
-	std::vector<VK_TextureView> m_pImageViews;
+	std::vector<VK_Texture> m_pTextures;
 
 	VkSurfaceFormatKHR m_pSurfaceFormat{};
 
-	//std::vector<VkImage> m_pDepthImages;
-	//std::vector<VkImageView> m_pDepthImageViews;
+	uint32_t m_pSwapImages = 0;
 
 	void CreateSwapchain(const VK_SwapChainInfo mInfo);
 };

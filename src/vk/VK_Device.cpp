@@ -15,10 +15,10 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 	void* pUserData);
 
-bool VK_Device::Initialize(std::function<void(VkSurfaceKHR* pSurface, VkInstance pInstance)> CreateSurface)
+bool VK_Device::Initialize(std::function<void(VkSurfaceKHR* pSurface, VkInstance mInstance)> CreateSurface)
 {
 	CreateInstance();
-#if defined  (_DEBUG) && !(__android__)
+#if defined  (_DEBUG) && !(ANDROID)
 	CreateDebugMessenger();
 #endif
 	CreateSurface(&m_pSurface, m_pInstance);
@@ -67,7 +67,7 @@ void VK_Device::CreateInstance()
 	
 	// # Layers & Extensions
 	std::vector<const char*> layers = {
-#if defined (_DEBUG) && !(__android__)
+#if defined (_DEBUG) && !(ANDROID)
 		"VK_LAYER_KHRONOS_validation"
 #endif
 	};
@@ -76,13 +76,13 @@ void VK_Device::CreateInstance()
 		VK_KHR_SURFACE_EXTENSION_NAME,
 #ifdef WIN32
 		"VK_KHR_win32_surface",
-#elif __android__
+#elif ANDROID
 		"VK_KHR_android_surface",
 #elif __linux__
 		"VK_KHR_xcb_surface",
 #endif
 
-#if defined (_DEBUG) && !(__android__)
+#if defined (_DEBUG) && !(ANDROID)
 		VK_EXT_DEBUG_UTILS_EXTENSION_NAME
 #endif
 	};
@@ -417,9 +417,9 @@ void VK_Device::CreateDevice()
 	// # Create queues
 	ASSERT(graphicsQFamilyIndex != -1, "Missing Vulkan queue graphics");
 
-	m_pQueues.mGraphics = new VK_Queue(graphicsQFamilyIndex);
-	m_pQueues.mCompute = computeQFamilyIndex == -1 ? m_pQueues.mGraphics : new VK_Queue(computeQFamilyIndex);
-	m_pQueues.mTransfer = transferQFamilyIndex == -1 ? m_pQueues.mGraphics : new VK_Queue(transferQFamilyIndex);
+	m_pQueues.mGraphics = new VK_Queue(graphicsQFamilyIndex, 0);
+	m_pQueues.mCompute = computeQFamilyIndex == -1 ? m_pQueues.mGraphics : new VK_Queue(computeQFamilyIndex, 0);
+	m_pQueues.mTransfer = transferQFamilyIndex == -1 ? m_pQueues.mGraphics : new VK_Queue(transferQFamilyIndex, 0);
 	m_pQueues.mPresent = m_pQueues.mGraphics;
 
 	if (computeQFamilyIndex == -1) LOG_INFO("Use the graphics queue is a compute queue also");
@@ -469,8 +469,12 @@ void VK_Device::CreateDevice()
 	CHECK_VK_RES(vkCreateDevice(PhyDev.m_pPhysDev, &DeviceCreateInfo, NULL, &m_pDevice), "vkCreateDevice");
 	// # volk: load device
 	volkLoadDevice(m_pDevice);
-}
 
+	// # Initialize queues
+	m_pQueues.mGraphics->Initialize();
+	m_pQueues.mCompute->Initialize();
+	m_pQueues.mTransfer->Initialize();
+}
 
 std::string GetDeviceType(VkPhysicalDeviceType pType)
 {

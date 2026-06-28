@@ -1,6 +1,7 @@
 #include "VK_Texture.h"
 
 #include "config.h"
+#include "VK_Device.h"
 
 VK_TextureView::VK_TextureView(const VkImage& mImage, VkFormat mFormat, VkImageViewType mViewType, VkImageAspectFlags mAspectFlags, uint32_t mLayerCount)
 {

@@ -9,8 +9,6 @@
 #include <vk_mem_alloc.h>
 
 
-#define INLINE_CON inline const
-
 struct VK_PhysDeviceProps
 {
 	VkPhysicalDevice m_pPhysDev;
@@ -54,17 +52,17 @@ public:
 	VK_Device() { pDeviceInstance = this; }
 
 
-	bool Initialize(std::function<void(VkSurfaceKHR* pSurface, VkInstance pInstance)> CreateSurface);
+	bool Initialize(std::function<void(VkSurfaceKHR* pSurface, VkInstance mInstance)> CreateSurface);
 	void Destroy();
 
 	inline static VK_Device* Get() { return pDeviceInstance; }
 
-	INLINE_CON VkInstance& getInstance() const { return m_pInstance; }
-	INLINE_CON VkSurfaceKHR getSurface() const { return m_pSurface; }
-	INLINE_CON VkDevice& getDevice() const { return m_pDevice; }
-	INLINE_CON VK_PhysDeviceProps& getSelectedPhysDevice() const { return m_pPhysDevices[m_selectedPhysDevIndex]; }
-	INLINE_CON VmaAllocator& getAllocator() const { return m_pAllocator; }
-	INLINE_CON auto& getQueues() const { return m_pQueues; }
+	inline const VkInstance& getInstance() const { return m_pInstance; }
+	inline const VkSurfaceKHR getSurface() const { return m_pSurface; }
+	inline const VkDevice& getDevice() const { return m_pDevice; }
+	inline const VK_PhysDeviceProps& getSelectedPhysDevice() const { return m_pPhysDevices[m_selectedPhysDevIndex]; }
+	inline const VmaAllocator& getAllocator() const { return m_pAllocator; }
+	inline const auto& getQueues() const { return m_pQueues; }
 
 private:
 	inline static VK_Device* pDeviceInstance;

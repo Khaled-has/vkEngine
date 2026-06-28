@@ -1,7 +1,8 @@
 #ifndef VK_TEXTURE_H
 #define VK_TEXTURE_H
 
-#include "VK_Device.h"
+#include <volk.h>
+#include <vk_mem_alloc.h>
 
 class VK_TextureView
 {
@@ -19,7 +20,10 @@ public:
 		uint32_t mLayerCount = 1);
 	void DestroyView();
 
+	inline VK_TextureView* getTextureView() { return this; }
+
 	inline const VkImageView& getView() const { return m_pView; }
+	inline const VkSampler& getSampler() const { return m_pSampler; }
 
 	inline VkExtent2D getExtent2D() const { return mExtent2D; }
 	inline VkFormat getFormat() const { return mFormat; }
@@ -28,6 +32,7 @@ public:
 
 protected:
 	VkImageView m_pView = VK_NULL_HANDLE;
+	VkSampler m_pSampler = VK_NULL_HANDLE;
 	VkExtent2D mExtent2D;
 	VkFormat mFormat;
 	uint32_t mLayerCount = 0;
@@ -39,6 +44,7 @@ class VK_Texture : public VK_TextureView
 {
 public:
 	VK_Texture() {}
+	inline VK_Texture(VkImage& mImage, VkFormat mFormat) { m_pImage = mImage; this->mFormat = mFormat; }
 
 	bool CreateImage(const void* pData, VkExtent2D mExtent2D, VkFormat mForamt, uint32_t mLayerCount);
 	void DestroyImage();
