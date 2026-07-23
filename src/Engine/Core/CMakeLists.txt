@@ -1,0 +1,63 @@
+# vkCoreInterface
+add_library(vkCoreInterface)
+
+target_sources(vkCoreInterface
+	PRIVATE
+		"Log.cpp"
+	PUBLIC
+	FILE_SET HEADERS
+	BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}"
+	FILES
+		"Timer.h" "Layer.h" "EngineAPI.h" "Log.h"
+)
+
+target_include_directories(vkCoreInterface
+	PUBLIC 	
+		"${EXTERN_DIR}/spdlog/include"
+)
+
+target_link_libraries(vkCoreInterface 
+	PUBLIC
+		vkEvents
+)
+
+# == vkCore
+add_library(vkCore SHARED)
+
+add_compile_definitions(vkCore PRIVATE ENGINE_BUILD)
+
+target_sources(vkCore
+	PRIVATE
+		 "${EXTERN_DIR}/volk/volk.c"		# volk
+		 "${EXTERN_DIR}/stb/stb_image.cpp"	# stb_image
+		 "Application.cpp" "LayerStack.cpp" "Layer.cpp" "Engine.cpp"
+	PUBLIC
+	FILE_SET HEADERS
+	BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}"
+	FILES
+		"Engine.h" "EngineAPI.h"
+)
+
+target_link_libraries(vkCore
+	PRIVATE
+		# local
+		vkPlatforms
+		vkRenderer
+		vkAssetsManager
+		vkScene
+
+		# == extern
+		# = vkPlatform & vkGPU & vkRenderer
+		ImGui_Core
+
+		# = vkPlatform & ImGui_Core
+		SDL3::SDL3
+
+		# = vkPlatform
+		dwmapi
+		gdi32
+		user32
+		kernel32
+	PUBLIC
+		vkEvents
+)
