@@ -1,33 +1,34 @@
 #pragma once
 
 #include <stdint.h>
-
-#include "EngineAPI.h"
+#include <imgui.h>
 
 namespace UI
 {
-	struct VK_ENGINE_API TexInfo
+	struct TexInfo
 	{
 		uint32_t mWidth;
 		uint32_t mHeight;
 		uint32_t mChannels;
 	};
 
-	class VK_ENGINE_API Texture
+	class Texture
 	{
 	public:
-		Texture() {}
+		Texture() = default;
 
-		virtual void destroy() = 0;
+		void load(const char* pFileName);
+		void destroy();
 
 		inline TexInfo getTexSize() { return mTexInfo; }
-		uint32_t ImTextureID();
-
-	protected:
-		virtual void load(const char* pFileName) = 0;
-		uint32_t mID;
+		operator ImTextureID() { return mImID; }
+		
+	private:
+		ImTextureID mImID;
 		TexInfo mTexInfo;
+
+		// # VK_Texture
+		void* mTexture;
 	};
 
-	extern "C" VK_ENGINE_API void CreateTexture(const char* pFileName, Texture* pTexture);
 }

@@ -1,120 +1,147 @@
 #include "TitleBar.h"
+#include "Editor.h"
 
 #include <imgui.h>
 
 void TitleBar::Setup()
 {
-	//UI::CreateTexture((std::string(RES_PATH) + "icon.png").c_str(), mTestTex);
+	mIconTex.load((std::string(RES_PATH) + "icon.png").c_str());
+	mTBarTex.load((std::string(RES_PATH) + "bar.png").c_str());
 }
 
 void TitleBar::Destroy()
 {
+	mIconTex.destroy();
+	mTBarTex.destroy();
 }
 
 void TitleBar::OnUpdate(double mDelta)
 {
 }
 
-void TitleBar::OnEvent(Event &event)
+void TitleBar::OnEvent(Event& event)
 {
 }
 
 void TitleBar::OnImGuiRender()
 {
-   ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.f, 15.f));
+	CustumTBar();
 
-	if (ImGui::BeginMainMenuBar())
-	{	
-		ImGui::Spacing();
-		ImGui::Image(mTestTex->ImTextureID(), ImVec2(50, 50));
-		ImGui::Spacing();
+	if (ImGui::Begin("EditorStyle", nullptr))
+	{
+		ImGui::ShowStyleEditor();
+	}
+	ImGui::End();
 
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 8.0f);
-		if (ImGui::BeginMenu("File"))
-		{
-			if (ImGui::MenuItem("FFF"))
-			{
-				ImGui::EndTabItem();
-			}
+	ImGui::Begin("TestMenu");
+	ImGui::End();
+}
 
-			ImGui::EndMenu();
-		}
+void TitleBar::CustumTBar()
+{
+	// Custum window bar
+	ImGuiWindowFlags flags =
+		ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse
+		| ImGuiWindowFlags_NoDocking;
 
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 8.0f);
-		if (ImGui::BeginMenu("Edit"))
-		{
-			if (ImGui::MenuItem("FFF"))
-			{
-				ImGui::EndTabItem();
-			}
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->WorkPos);
+	ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, 55.0f));
 
-			ImGui::EndMenu();
-		}
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
+	ImGui::Begin("###CustumTitleBar", nullptr, flags);
+	ImGui::PopStyleColor();
 
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 8.0f);
-		if (ImGui::BeginMenu("Window"))
-		{
-			if (ImGui::MenuItem("FFF"))
-			{
-				ImGui::EndTabItem();
-			}
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-			ImGui::EndMenu();
-		}
+	ImVec2 min = ImGui::GetWindowPos();
+	ImVec2 max = ImVec2(min.x + 280.0f, min.y + 55.0f);
 
-		// Title
-		ImGui::SameLine(((ImGui::GetWindowWidth() / 2) - 125.0f));
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 8.0f);
-		//ImGui::Text(w_Prop.Title.c_str());
+	ImU32 colorLeft = ImColor(240, 80, 80, 255);
+	ImU32 colorRight = ImColor(0, 0, 0, 255);
 
-		/* ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8.0f); */
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 250.0f);
-		if (ImGui::BeginMenu("Development"))
-		{
-			if (ImGui::MenuItem("FFF"))
-			{
-				ImGui::EndTabItem();
-			}
+	drawList->AddRectFilledMultiColor(min, max, colorLeft, colorRight, colorRight, colorLeft);
+	drawList->AddRectFilledMultiColor(ImVec2(max.x, 0.0f), ImVec2(ImGui::GetWindowSize().x + min.x, ImGui::GetWindowSize().y + min.y), colorRight, colorRight, colorRight, colorRight);
 
-			ImGui::EndMenu();
-		}
+	// # 1 : App icon
+	ImGui::SetCursorPos(ImVec2(10.0f, 6.0f));
+	ImGui::Image((ImTextureID)mIconTex, ImVec2(52.f, 40.f));
 
-		// ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8.0f);
-		// ImGui::SameLine(ImGui::GetWindowWidth() - 45.f);
+	// # 2 : Items
 
-		// if (ImGui::ImageButton("EXIE", (ImTextureRef)textureBar.GetID(), ImVec2(20.f, 20.f), ImVec2(0, 0), ImVec2(0.3333f, 1.0f)))
-		// {
-		// 	// Close The Application
-		// 	//*pRunning = false;
-		// }
+	// > File
+	ImGui::SameLine();
+	ImGui::SetCursorPos(ImVec2(90.0f, 0.0f));
+	if (ImGui::Button("File"))
+	{
+		FileMenu();
+	}
 
-		// ImGui::SameLine(ImGui::GetWindowWidth() - 84.f);
-		// if (ImGui::ImageButton("MAXMIZE", (ImTextureRef)textureBar.GetID(), ImVec2(20.f, 20.f), ImVec2(0.3333f, 0.0f), ImVec2(0.6666f, 1.0f)))
-		// {
-		// 	static bool max = false;
-		// 	if (!max)
-		// 	{
-		// 		SetWin32Show(w_Window, SW_MAXIMIZE);
-		// 		max = true;
-		// 	}
-		// 	else
-		// 	{
-		// 		SetWin32Show(w_Window, SW_SHOWDEFAULT);
-		// 		max = false;
-		// 	}
-		// }
+	// > Edite
+	ImGui::SameLine();
+	ImGui::SetCursorPosY(0.0f);
+	if (ImGui::Button("Edite"))
+	{
+		EditeMenu();
+	}
 
-		ImGui::SameLine(ImGui::GetWindowWidth() - 124.f);
-		// if (ImGui::ImageButton("MIXMIZE", (ImTextureRef)textureBar.GetID(), ImVec2(20.f, 20.f), ImVec2(0.6666f, 0.0f), ImVec2(1.0f, 1.0f)))
-		// {
-		// 	SetWin32Show(w_Window, SW_MINIMIZE);
-		// }
+	// > View
+	ImGui::SameLine();
+	ImGui::SetCursorPosY(0.0f);
+	if (ImGui::Button("View"))
+	{
+	
+	}
+
+	// > Tools
+	ImGui::SameLine();
+	ImGui::SetCursorPosY(0.0f);
+	if (ImGui::Button("Tools"))
+	{
 
 	}
-	ImGui::EndMainMenuBar();
-	ImGui::PopStyleVar();
 
-	if (ImGui::Begin("Editor Style"))
-		ImGui::ShowStyleEditor(&ImGui::GetStyle());
-    ImGui::End();
+	// # 3 : The application title
+	ImGui::SameLine();
+	ImGui::SetCursorPos(ImVec2((ImGui::GetWindowSize().x / 2.0f) - 50.0f, 5.0f));
+	ImGui::Text("vkEngine Hello world from vulkan");
+
+	// # 4 : Window buttons
+	WindowButtons();
+
+	ImGui::End();
+}
+
+void TitleBar::FileMenu()
+{
+}
+
+void TitleBar::EditeMenu()
+{
+}
+
+void TitleBar::WindowButtons()
+{
+	// # Close button
+	ImGui::SameLine();
+	ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - 38.0f, 5.0f));
+	if (ImGui::ImageButton("#Exite", (ImTextureID)mTBarTex, ImVec2(25.0f, 25.0f), ImVec2(0, 0), ImVec2(1.0f / 3.0f, 1.0f)))
+	{
+		Editor::Editor::getEngine()->CloseApplication();
+	}
+	// # Maxmize button
+	ImGui::SameLine();
+	ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - 75.0f, 5.0f));
+	if (ImGui::ImageButton("#Maxmize", (ImTextureID)mTBarTex, ImVec2(25.0f, 25.0f), ImVec2(1.0f / 3.0f, 0), ImVec2(2.0f / 3.0f, 1.0f)))
+	{
+		Editor::Editor::getEngine()->MaximizeApplication();
+	}
+	// # Minmize button
+	ImGui::SameLine();
+	ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - 112.0f, 5.0f));
+	if (ImGui::ImageButton("#Minmize", (ImTextureID)mTBarTex, ImVec2(25.0f, 25.0f), ImVec2(2.0f / 3.0f, 0), ImVec2(1.0f, 1.0f)))
+	{
+		Editor::Editor::getEngine()->MinimizeApplication();
+	}
 }

@@ -2,6 +2,7 @@
 #define VK_TEXTURE_H
 
 #include "VK_Buffer.h"
+#include "VK_CmdBuf.h"
 
 class VK_TextureView
 {
@@ -51,7 +52,7 @@ public:
 	VK_Texture() {}
 	inline VK_Texture(VkImage& mImage, VkFormat mFormat) { m_pImage = mImage; this->mFormat = mFormat; }
 
-	void CreateImage(VkExtent3D mExtent, VkFormat mFormat, uint32_t mLayerCount);
+	void CreateImage(VkExtent3D mExtent, VkFormat mFormat, VkImageUsageFlags mUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, uint32_t mLayerCount = 1u);
 	void DestroyImage();
 
 	inline const VkImage& getImage() const { return m_pImage; }
@@ -62,5 +63,7 @@ private:
 };
 
 void CopyBufferToImage(const VK_Buffer& mBuffer, VK_Texture& mImage, std::span<VkBufferImageCopy> pRegions);
+
+void TextureLayoutTransition(VK_Texture& mTex, const VK_CmdBuf& mCmdBuf, VkImageLayout mNewLayout);
 
 #endif

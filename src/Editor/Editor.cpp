@@ -1,27 +1,49 @@
 #include "Editor.h"
 
 #include "TitleBar/TitleBar.h"
+#include "Label/Label.h"
+#include "Label/Inspector.h"
 
 #include <imgui.h>
+#include <UI.h>
 
 namespace Editor
 {
 
-    void Editor::Initialize(void* pImContext)
+    void Editor::Initialize(Engine::EngineCore* pCurrentEngine)
     {
-        ImGui::SetCurrentContext(reinterpret_cast<ImGuiContext*>(pImContext));
+        pEngine = pCurrentEngine;
+        // # UI context
+        UI::SetUIContext(reinterpret_cast<UI::UIContext*>(pCurrentEngine->getGPUContext()));
+        // # ImGui context
+        ImGui::SetCurrentContext(reinterpret_cast<ImGuiContext*>(pCurrentEngine->getImGuiContext()));
+        // # Scene manager context
+        Engine::SceneManager::SetCurrent(pCurrentEngine->getSceneContext());
+        Engine::SceneManager::AddNewScene("test_scene");
+        Engine::SceneManager::SelectActiveScene(0);
+
+        // # Setup ImGui style
         SetupImGuiStyle();
 
-        Engine::PushLayer(new TitleBar());
+        pCurrentEngine->PushLayer(new TitleBar());
+        Label* pLabel = new Label();
+        pCurrentEngine->PushLayer(pLabel);
+        pCurrentEngine->PushLayer(new Inspector(pLabel->getSelectedIndex()));
     }
 
     void Editor::SetupImGuiStyle()
     {
+        ImGuiIO& io = ImGui::GetIO();
+
+        io.Fonts->AddFontFromFileTTF((std::string(RES_PATH) + "JetBrainsMonoNL-ExtraBold.ttf").c_str());
+
+        // --
         ImGui::StyleColorsDark();
         ImGuiStyle& style = ImGui::GetStyle();
 
         // Font Style
         style.FontSizeBase = 22.0f;
+
 
         // Colors
         style.Colors[ImGuiCol_Button].w = 0.f;

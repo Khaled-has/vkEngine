@@ -28,14 +28,13 @@ add_compile_definitions(vkCore PRIVATE ENGINE_BUILD)
 
 target_sources(vkCore
 	PRIVATE
-		 "${EXTERN_DIR}/volk/volk.c"		# volk
 		 "${EXTERN_DIR}/stb/stb_image.cpp"	# stb_image
 		 "Application.cpp" "LayerStack.cpp" "Layer.cpp" "Engine.cpp"
 	PUBLIC
 	FILE_SET HEADERS
 	BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}"
 	FILES
-		"Engine.h" "EngineAPI.h"
+		"EngineAPI.h" "Engine.h" "Layer.h"
 )
 
 target_link_libraries(vkCore
@@ -45,10 +44,12 @@ target_link_libraries(vkCore
 		vkRenderer
 		vkAssetsManager
 		vkScene
+		vkUI
 
 		# == extern
 		# = vkPlatform & vkGPU & vkRenderer
 		ImGui_Core
+		volk
 
 		# = vkPlatform & ImGui_Core
 		SDL3::SDL3
@@ -60,4 +61,5 @@ target_link_libraries(vkCore
 		kernel32
 	PUBLIC
 		vkEvents
+		vkScene
 )

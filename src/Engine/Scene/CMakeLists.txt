@@ -8,10 +8,11 @@ target_sources(vkScene
     FILE_SET HEADERS
     BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}"
     FILES
-        "SceneManager.h" "Entity.h" "Components.h"
+        "SceneManager.h" "Scene.h" "Entity.h" "Components.h"
 )
 
 target_include_directories(vkScene 
     PUBLIC
         "${EXTERN_DIR}/entt"
+        "${EXTERN_DIR}/glm"
 )

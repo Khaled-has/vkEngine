@@ -31,6 +31,9 @@ public:
 
 	virtual void OnUpdate() {}
 
+	virtual void Maximize() = 0;
+	virtual void Minimize() = 0;
+
 	inline void SetEventCallback(std::function<void(Event*)> mEventCallback) { m_EventCallback = mEventCallback; }
 	inline const WindowInfo& getWindowInfo() const { return m_Info; }
 

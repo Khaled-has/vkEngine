@@ -16,10 +16,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(EXTERN_DIR "${CMAKE_SOURCE_DIR}/extern")
 
 add_compile_definitions(RES_PATH="${CMAKE_SOURCE_DIR}/res/")
+add_compile_definitions(PROJ_PATH="${CMAKE_SOURCE_DIR}")
 
 # === SDL3
-list(APPEND CMAKE_PREFIX_PATH "${EXTERN_DIR}/SDL3")
-find_package(SDL3 REQUIRED CONFIG COMPONENTS SDL3)
+if(WIN32)
+	list(APPEND CMAKE_PREFIX_PATH "${EXTERN_DIR}/SDL3")
+	find_package(SDL3 REQUIRED CONFIG COMPONENTS SDL3)
+endif()
 
 # === Executables >|<
 # == Editor
@@ -58,3 +61,4 @@ add_subdirectory("src/Engine/UI")				# UI
 add_subdirectory("src/Editor")					# Editor
 
 add_subdirectory("${EXTERN_DIR}/ImGui") 		# ImGui
+add_subdirectory("${EXTERN_DIR}/volk")			# volk

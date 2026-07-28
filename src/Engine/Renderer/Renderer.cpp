@@ -2,7 +2,10 @@
 
 #include "vkRenderer.h"
 
-Renderer* CreateRenderer()
+namespace Render
 {
-	return new vkRenderer();
+	Renderer* CreateRenderer()
+	{
+		return new vkRenderer();
+	}
 }

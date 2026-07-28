@@ -57,6 +57,7 @@ public:
 	void Destroy();
 
 	inline static VK_Device* Get() { return pDeviceInstance; }
+	inline static void Set(VK_Device* pDevice) { pDeviceInstance = pDevice; }
 
 	inline const VkInstance& getInstance() const { return m_pInstance; }
 	inline const VkSurfaceKHR getSurface() const { return m_pSurface; }
@@ -68,6 +69,7 @@ public:
 	inline uint32_t getInstanceVersion() const { return m_pInstanceVersion; }
 
 	// # NOTE: This CmdBuf only used for simple operations & only in the main thread
+	inline const VK_CmdPool& getCmdPool() { return m_CmdPool; }
 	inline const VK_CmdBuf& getCmdBuf() { return m_SimpleOperationCmdBuf; }
 private:
 	inline static VK_Device* pDeviceInstance;

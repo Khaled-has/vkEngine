@@ -18,6 +18,9 @@ public:
 
 	virtual void OnUpdate() override;
 
+	virtual void Maximize() override;
+	virtual void Minimize() override;
+
 private:
 	SDL_Window* m_pWindow;
 	SDL_Event m_event;

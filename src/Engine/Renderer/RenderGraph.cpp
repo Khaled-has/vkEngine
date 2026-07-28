@@ -289,7 +289,8 @@ void RenderGraph::addColorImage(std::string mName, VkFormat mFormat)
 	mImages.back().mName = mName;
 	for (auto& Im : mImages.back().mImages)
 	{
-		Im.CreateImage(VkExtent3D{ .width = 1440, .height = 720, .depth = 1 }, mFormat, 1);
+		Im.CreateImage(VkExtent3D{ .width = 1440, .height = 720, .depth = 1 }, mFormat);
+		Im.CreateView(Im.getImage(), Im.getFormat(), VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
 		Im.CreateSampler(VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT);
 	}
 }

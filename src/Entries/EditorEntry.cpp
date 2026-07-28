@@ -1,21 +1,25 @@
 
 /* # Editor entry point */
 
-#include <Engine.h>
-
 #include <Editor.h>
+#include <Engine.h>
 
 int main(int argc, char* argv[])
 {
-	// # Editor 
-	auto _EditorInit = [](void* pImContex) {
-		Editor::Editor editor;
-		editor.Initialize(pImContex);
-	};
+	std::string path_only_for_development = PROJ_PATH;
 
+	// # Application info
+	Engine::ApplicationInfo mAppInfo = {
+		.mProjName = "development_test_project",
+		.mProjPath = path_only_for_development
+	};
 	// # Create the engine
-	return Engine::Create_Engine(
-		_EditorInit,
-		argc, argv
-	);
+	Engine::EngineCore* pEngine = Engine::Create_Engine(mAppInfo);
+
+	// # Create the editor
+	Editor::Editor mEditor;
+	mEditor.Initialize(pEngine);
+
+	pEngine->Run();
+	pEngine->Destroy();
 }

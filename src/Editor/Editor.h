@@ -1,20 +1,39 @@
 #pragma once
 
+#include <Engine.h>
+
 #include "EditorAPI.h"
 
 namespace Editor
 {
 
+    struct TitleBarSerializer
+    {
+        bool mFileMenu = false;
+        bool mEditeMenu = false;
+    };
+
     class VK_EDITOR_API Editor
     {
     public:
-        Editor() {}
+        Editor() { pInstance = this; }
+
+        static inline Engine::EngineCore* getEngine() { return pInstance->pEngine; }
+
+        static inline TitleBarSerializer& getTitleBarSer() { return pInstance->mTitleBarSer; }
 
         // # Init & Create the editor's layers
-        void Initialize(void* pImContext);
+        void Initialize(Engine::EngineCore* pCurrentEngine);
 
     private:
+        static inline Editor* pInstance;
+
+        Engine::EngineCore* pEngine;
+
+        TitleBarSerializer mTitleBarSer;
+
         void SetupImGuiStyle();
+
     };
 
 }

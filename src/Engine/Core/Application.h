@@ -12,31 +12,46 @@
 
 #include "LayerStack.h"
 
-struct ApplicationInfo
+#include "Engine.h"
+
+namespace Engine
 {
-	std::string mProjName;
-	std::string mProjPath;
-	std::function<void(void*)> mEditorInitFunc;
-};
 
-class Application
-{
-public:
-	Application(ApplicationInfo mInfo);
-	~Application();
+	class VK_ENGINE_API Application : public EngineCore
+	{
+	public:
+		Application(ApplicationInfo mInfo);
+		~Application() {}
 
-private:
-	Window* m_pAppWindow;
-	Renderer* m_pRenderer;
+		virtual void Run() override;
+		virtual void Destroy() override;
 
-	LayerStack* m_pLayerStack;
+		virtual void* getImGuiContext() override;
+		virtual void* getGPUContext() override;
 
-	bool m_AppRunning = true;
+		virtual SceneManager* getSceneContext() override;
 
-	void OnEvent(Event* event);
+		virtual void PushLayer(Layer* pLayer) override;
 
-	bool OnKeyPressed(KeyPressedEvent& event);
+		virtual void CloseApplication() override;
+		virtual void MaximizeApplication() override;
+		virtual void MinimizeApplication() override;
 
-	bool OnWindowResize(WindowResizeEvent& event);
-	bool OnWindowClose(WindowCloseEvent& event);
-};
+	private:
+		Window* m_pAppWindow;
+		Render::Renderer* m_pRenderer;
+
+		LayerStack* m_pLayerStack;
+		SceneManager* m_pSceneManager;
+
+		bool m_AppRunning = true;
+
+		void OnEvent(Event* event);
+
+		bool OnKeyPressed(KeyPressedEvent& event);
+
+		bool OnWindowResize(WindowResizeEvent& event);
+		bool OnWindowClose(WindowCloseEvent& event);
+	};
+
+}

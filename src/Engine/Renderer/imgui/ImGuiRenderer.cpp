@@ -162,6 +162,11 @@ const VK_CmdBuf& ImGuiRenderer::getCmdBuf(
 void ImGuiRenderer::Render()
 {
 	ImGui::Render();
+
+#ifdef WIN32
+	ImGui::UpdatePlatformWindows();
+	ImGui::RenderPlatformWindowsDefault();
+#endif
 }
 
 void ImGuiRenderer::Destroy()
@@ -178,6 +183,10 @@ void ImGuiRenderer::ImGuiStyleInit()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
 	io.DisplaySize.x = (float)Window::getInstance()->getWindowInfo().mWidth;
 	io.DisplaySize.y = (float)Window::getInstance()->getWindowInfo().mHeight;
+
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	// # Initialize imgui impl window for vulkan
 	Window::getInstance()->ImGui_ImplWindow_Init();

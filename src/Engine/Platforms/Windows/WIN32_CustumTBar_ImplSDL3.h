@@ -11,6 +11,9 @@ public:
 
     void WIN32CustomTBarProcess(SDL_Event* ev);
 
+    void MinimizeWindow();
+    void MaximizeWindow();
+
 private:
     SDL_Window* m_pWindow;
 };

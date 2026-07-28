@@ -15,8 +15,6 @@ target_sources(vkGPU
 )
 
 target_include_directories(vkGPU PUBLIC
-	"${EXTERN_DIR}/vulkan/include"
-	"${EXTERN_DIR}/volk"
 	"${EXTERN_DIR}/vma"
 	"${EXTERN_DIR}/shaderc"
 )
@@ -27,4 +25,5 @@ target_link_libraries(vkGPU
 		"${EXTERN_DIR}/shaderc/shaderc_shared.lib"
 	PUBLIC
 		vkCoreInterface
+		volk
 )

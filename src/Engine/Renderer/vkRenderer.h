@@ -8,51 +8,57 @@
 #include "imgui/ImGuiRenderer.h"
 #include "DrawColorPass.h"
 
-class vkRenderer : public Renderer
+namespace Render
 {
-public:
-	vkRenderer() {}
-
-	static vkRenderer* Instance() { return m_pInstance; }
-
-	virtual void Initialize() override;
-	virtual void Destroy() override;
-	
-	virtual void Rendering() override;
-
-private:
-	static vkRenderer* m_pInstance;
-
-	ImGuiRenderer m_ImGuiRenderer;
-
-	// # Passes
-	DrawColorPass mDrawColorPass;
-
-
-	// # Screen view
-	struct
+	class vkRenderer : public Renderer
 	{
-		VK_GraphPipeline mPipeline;
-		VK_RenderPass mRenderPass;
+	public:
+		vkRenderer() {}
 
-		VK_Buffer mBuffer;
-		VK_Shader mShader;
+		static vkRenderer* Instance() { return m_pInstance; }
 
-	} mScreenView;
+		VK_Device& getDevice() { return m_Device; }
+		VK_SwapChain& getSwapChain() { return m_SwapChain; }
 
-	VK_Device m_Device;
-	VK_SwapChain m_pSwapChain;
+		virtual void Initialize() override;
+		virtual void Destroy() override;
 
-	VK_CmdPool m_pCmdPool;
-	std::vector<VK_CmdBuf> m_pCmdBufs;
-	VK_CmdBuf m_CopyCmdBuf;
+		virtual void Rendering() override;
 
-	VK_SemaphoresManager m_pSemManager;
+		virtual void AddViewport(const Viewport& mViewport) override;
 
-	std::unique_ptr<RenderGraph> m_pRenderGraph;
-	
-	void InitRenderGraph();
-	
-	void InitScreenView(Image& mGraphImage);
-	void ScreenViewDraw(VK_CmdBuf& mCmdBuf, uint32_t mIndex);
-};
+	private:
+		static vkRenderer* m_pInstance;
+
+		ImGuiRenderer m_ImGuiRenderer;
+
+		// # Screen view
+		struct
+		{
+			VK_GraphPipeline mPipeline;
+			VK_RenderPass mRenderPass;
+
+			VK_Buffer mBuffer;
+			VK_Shader mShader;
+
+		} mScreenView;
+
+		VK_Device m_Device;
+		VK_SwapChain m_SwapChain;
+
+		VK_CmdPool m_pCmdPool;
+		std::vector<VK_CmdBuf> m_pCmdBufs;
+		VK_CmdBuf m_CopyCmdBuf;
+
+		VK_SemaphoresManager m_pSemManager;
+
+		std::unique_ptr<RenderGraph> m_pRenderGraph;
+
+		void RecordCommandBuffers();
+
+		void InitRenderGraph();
+
+		void InitScreenView(Image& mGraphImage);
+		void ScreenViewDraw(VK_CmdBuf& mCmdBuf, uint32_t mIndex);
+	};
+}

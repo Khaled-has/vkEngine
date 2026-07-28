@@ -4,17 +4,8 @@
 
 namespace Engine
 {
-	int Create_Engine(std::function<void(void*)> mEditorInitFunc_, int argc, char* argv[])
+	EngineCore* Create_Engine(ApplicationInfo mInfo)
 	{
-		ApplicationInfo info = {
-			.mProjName = "vkEngine",
-			.mProjPath = "NONE",
-			.mEditorInitFunc = mEditorInitFunc_
-		};
-
-		auto* m_pApplication = new Application(info);
-		delete m_pApplication;
-
-		return 0;
+		return new Application(mInfo);
 	}
 }

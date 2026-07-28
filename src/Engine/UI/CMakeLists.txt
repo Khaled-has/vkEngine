@@ -3,12 +3,12 @@ add_library(vkUI)
 
 target_sources(vkUI
 	PRIVATE
-	"Texture.cpp" "ITexture.cpp"
+	"UI.cpp" "Texture.cpp"
 	PUBLIC 
     FILE_SET HEADERS
     BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}"
     FILES
-	"Texture.h"
+	"UI.h"
 )
 
 target_link_libraries(vkUI
@@ -21,5 +21,3 @@ target_include_directories(vkUI
 	PRIVATE
 		"${EXTERN_DIR}/stb"
 )
-
-add_compile_definitions(vkUI PRIVATE ENGINE_BUILD)
