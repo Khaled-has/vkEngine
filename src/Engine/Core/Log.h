@@ -1,25 +1,40 @@
 #pragma once
 
 #include <iostream>
-#include <memory>
+#include <vector>
+#include <format>
 
-#include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
+typedef enum MessageType
+{
+	MESSAGE_TYPE_INFO = 0,
+	MESSAGE_TYPE_WARN = 0,
+	MESSAGE_TYPE_ERROR = 0
+} MessageType;
+
+struct Message
+{
+	std::string mMsg;
+	MessageType mMsgType;
+};
 
 class Log
 {
 public:
+	Log() {}
 	static void Init();
 
-	inline static std::shared_ptr<spdlog::logger>& GetLogger() { return m_logger; }
+	static void LogError(std::string msg);
+	static void LogWarn(std::string msg);
+	static void LogInfo(std::string msg);
 
 private:
-	static std::shared_ptr<spdlog::logger> m_logger;
+	static Log* m_pInstance;
+	std::vector<Message> m_Messages;
 };
 
-#define LOG_TRACE(...)    ::Log::GetLogger()->trace(__VA_ARGS__)
-#define LOG_INFO(...)     ::Log::GetLogger()->info(__VA_ARGS__)
-#define LOG_WARN(...)     ::Log::GetLogger()->warn(__VA_ARGS__)
-#define LOG_ERROR(...)    ::Log::GetLogger()->error(__VA_ARGS__)
+#define LOG_TRACE(fmt, ...)    Log::LogInfo(std::format(fmt, __VA_ARGS__))
+#define LOG_INFO(fmt, ...)     Log::LogInfo(std::format(fmt, __VA_ARGS__))
+#define LOG_WARN(fmt, ...)     Log::LogWarn(std::format(fmt, __VA_ARGS__))
+#define LOG_ERROR(fmt, ...)    Log::LogError(std::format(fmt, __VA_ARGS__))
 
-#define ASSERT(x, ...)		 { if (!(x)) { Log::GetLogger()->error("Assert error: {0}", __VA_ARGS__); __debugbreak(); } }
+#define ASSERT(x, _msg_)		 { if (!(x)) { Log::LogError(std::format("Assert error: {0}", _msg_)); __debugbreak(); } }

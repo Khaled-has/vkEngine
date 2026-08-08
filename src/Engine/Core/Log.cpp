@@ -1,12 +1,28 @@
 #include "Log.h"
 
-#include <spdlog/sinks/stdout_color_sinks.h>
-
-std::shared_ptr<spdlog::logger> Log::m_logger;
+Log* Log::m_pInstance = nullptr;
 
 void Log::Init()
 {
-	spdlog::set_pattern("%^[%T] : %v%$");
-	m_logger = spdlog::stdout_color_mt("Ed");
-	m_logger->set_level(spdlog::level::trace);
+	m_pInstance = new Log();
+}
+
+
+void Log::LogError(std::string msg)
+{
+	m_pInstance->m_Messages.push_back({ .mMsg = ("[ Error ]" + msg), .mMsgType = MESSAGE_TYPE_ERROR});
+	std::cout << "Error message: " << msg << std::endl;
+}
+
+void Log::LogWarn(std::string msg)
+{
+	m_pInstance->m_Messages.push_back({ .mMsg = ("[ Warn ]" + msg), .mMsgType = MESSAGE_TYPE_WARN });
+	std::cout << "Warn message: " << msg << std::endl;
+}
+
+
+void Log::LogInfo(std::string msg)
+{
+	m_pInstance->m_Messages.push_back({ .mMsg = ("[ Info ]" + msg), .mMsgType = MESSAGE_TYPE_INFO });
+	std::cout << "Info message: " << msg << std::endl;
 }

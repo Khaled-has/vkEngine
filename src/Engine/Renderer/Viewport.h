@@ -24,9 +24,9 @@ namespace Render
 	class Viewport
 	{
 	public:
-		Viewport(ViewportInfo mInfo) : m_Info(mInfo) {}
+		Viewport() {}
 
-		virtual void Create() = 0;
+		virtual void Create(ViewportInfo mInfo) = 0;
 		virtual void Destroy() = 0;
 
 		virtual ImTextureID getImageView() = 0;
@@ -35,5 +35,5 @@ namespace Render
 		ViewportInfo m_Info;
 	};
 
-	
+	Viewport* Create_Viewport();
 }

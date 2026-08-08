@@ -3,8 +3,7 @@ add_library(vkRenderer)
 
 target_sources(vkRenderer
 	PRIVATE
-		"Renderer.cpp" "vkRenderer.cpp" "Viewport.cpp" "Viewport.cpp"
-		"RenderGraph.cpp" "imgui/ImGuiRenderer.cpp" "DrawColorPass.cpp"
+		"Renderer.cpp" "vkRenderer.cpp" "Viewport.cpp"
 	PUBLIC
 	FILE_SET HEADERS
 	BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -18,6 +17,5 @@ target_link_libraries(vkRenderer
 		vkGPU
 		vkPlatforms
 		vkScene
-	PUBLIC
-		ImGui_Core
+		ImGui_ImplVulkan
 )

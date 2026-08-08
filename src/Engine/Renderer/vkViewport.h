@@ -6,17 +6,24 @@
 
 namespace Render
 {
-	class vkViewport : public Viewport
-	{
-	public:
-		vkViewport(ViewportInfo mInfo) : Viewport(mInfo) {}
+	//class vkViewport : public Viewport
+	//{
+	//public:
+	//	vkViewport() {}
 
-		virtual void Create() override;
-		virtual void Destroy() override;
+	//	virtual void Create(ViewportInfo mInfo) override;
+	//	virtual void Destroy() override;
 
-		virtual ImTextureID getImageView() override;
+	//	virtual ImTextureID getImageView() override;
 
-	private:
-		RenderGraph mRenderGraph;
-	};
+	//	inline VK_CmdBuf& getCmdBufs(uint32_t mIndex) { return m_CmdBufs[mIndex]; }
+
+	//private:
+	//	std::unique_ptr<RenderGraph> m_pRenderGraph;
+
+	//	std::vector<VK_CmdBuf> m_CmdBufs;
+	//	std::vector<VkDescriptorSet> m_DescSets;
+
+	//	void RecordCmdBufs();
+	//};
 }

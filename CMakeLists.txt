@@ -56,9 +56,9 @@ add_subdirectory("src/Engine/GPU")				# GPU
 add_subdirectory("src/Engine/Event")			# Event
 add_subdirectory("src/Engine/AssetsSystem")		# AssetsSystem
 add_subdirectory("src/Engine/Scene")			# Scene
-add_subdirectory("src/Engine/UI")				# UI
+#add_subdirectory("src/Engine/UI")				# UI
 
-add_subdirectory("src/Editor")					# Editor
+#add_subdirectory("src/Editor")					# Editor
 
 add_subdirectory("${EXTERN_DIR}/ImGui") 		# ImGui
 add_subdirectory("${EXTERN_DIR}/volk")			# volk

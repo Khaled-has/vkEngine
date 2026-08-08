@@ -18,8 +18,6 @@ namespace Editor
     public:
         Editor() { pInstance = this; }
 
-        static inline Engine::EngineCore* getEngine() { return pInstance->pEngine; }
-
         static inline TitleBarSerializer& getTitleBarSer() { return pInstance->mTitleBarSer; }
 
         // # Init & Create the editor's layers
@@ -27,8 +25,6 @@ namespace Editor
 
     private:
         static inline Editor* pInstance;
-
-        Engine::EngineCore* pEngine;
 
         TitleBarSerializer mTitleBarSer;
 

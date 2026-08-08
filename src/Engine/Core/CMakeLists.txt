@@ -11,11 +11,6 @@ target_sources(vkCoreInterface
 		"Timer.h" "Layer.h" "EngineAPI.h" "Log.h"
 )
 
-target_include_directories(vkCoreInterface
-	PUBLIC 	
-		"${EXTERN_DIR}/spdlog/include"
-)
-
 target_link_libraries(vkCoreInterface 
 	PUBLIC
 		vkEvents
@@ -41,10 +36,7 @@ target_link_libraries(vkCore
 	PRIVATE
 		# local
 		vkPlatforms
-		vkRenderer
 		vkAssetsManager
-		vkScene
-		vkUI
 
 		# == extern
 		# = vkPlatform & vkGPU & vkRenderer
@@ -62,4 +54,7 @@ target_link_libraries(vkCore
 	PUBLIC
 		vkEvents
 		vkScene
+		vkRenderer
+		vkUI
+		ImGui_UI
 )

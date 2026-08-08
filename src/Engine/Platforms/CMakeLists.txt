@@ -22,7 +22,8 @@ target_include_directories(vkPlatforms
 target_link_libraries(vkPlatforms
 	PRIVATE
 		vkCoreInterface
-		ImGui_Core
+		ImGui_ImplSDL3
+		ImGui_ImplVulkan
 	PUBLIC
 		vkEvents
 )

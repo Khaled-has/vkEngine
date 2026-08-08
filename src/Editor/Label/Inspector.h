@@ -2,7 +2,7 @@
 
 #include <Layer.h>
 
-#include "TransformUI.h"
+#include "UIComponents/TransformUI.h"
 
 class Inspector : public Engine::Layer
 {
@@ -12,8 +12,8 @@ public:
 	virtual void Setup() override;
 	virtual void Destroy() override;
 
-	virtual void OnUpdate(double mDelta) override {};
-	virtual void OnEvent(Event& event) override {};
+	virtual void OnUpdate(double mDelta) override {}; // Unused
+	virtual void OnEvent(Event& event) override {};   // Unused
 	virtual void OnImGuiRender() override;
 
 private:

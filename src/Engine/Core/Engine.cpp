@@ -4,7 +4,12 @@
 
 namespace Engine
 {
-	EngineCore* Create_Engine(ApplicationInfo mInfo)
+	void  EngineCore::SetCurrent(EngineCore* pCurrent)
+	{
+		pInstance = (Application*)pCurrent;
+	}
+
+	EngineCore* Create_Engine(EngineInfo mInfo)
 	{
 		return new Application(mInfo);
 	}

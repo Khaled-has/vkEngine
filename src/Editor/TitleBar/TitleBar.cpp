@@ -32,9 +32,6 @@ void TitleBar::OnImGuiRender()
 		ImGui::ShowStyleEditor();
 	}
 	ImGui::End();
-
-	ImGui::Begin("TestMenu");
-	ImGui::End();
 }
 
 void TitleBar::CustumTBar()
@@ -128,20 +125,20 @@ void TitleBar::WindowButtons()
 	ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - 38.0f, 5.0f));
 	if (ImGui::ImageButton("#Exite", (ImTextureID)mTBarTex, ImVec2(25.0f, 25.0f), ImVec2(0, 0), ImVec2(1.0f / 3.0f, 1.0f)))
 	{
-		Editor::Editor::getEngine()->CloseApplication();
+		Engine::EngineCore::CloseApplication();
 	}
 	// # Maxmize button
 	ImGui::SameLine();
 	ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - 75.0f, 5.0f));
 	if (ImGui::ImageButton("#Maxmize", (ImTextureID)mTBarTex, ImVec2(25.0f, 25.0f), ImVec2(1.0f / 3.0f, 0), ImVec2(2.0f / 3.0f, 1.0f)))
 	{
-		Editor::Editor::getEngine()->MaximizeApplication();
+		Engine::EngineCore::MaximizeApplication();
 	}
 	// # Minmize button
 	ImGui::SameLine();
 	ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - 112.0f, 5.0f));
 	if (ImGui::ImageButton("#Minmize", (ImTextureID)mTBarTex, ImVec2(25.0f, 25.0f), ImVec2(2.0f / 3.0f, 0), ImVec2(1.0f, 1.0f)))
 	{
-		Editor::Editor::getEngine()->MinimizeApplication();
+		Engine::EngineCore::MinimizeApplication();
 	}
 }

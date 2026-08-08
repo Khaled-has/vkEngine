@@ -14,7 +14,9 @@ target_sources(vkUI
 target_link_libraries(vkUI
 	PRIVATE
 		vkGPU
-		ImGui_Core
+		ImGui_ImplVulkan
+	PUBLIC
+		ImGui_UI
 )
 
 target_include_directories(vkUI

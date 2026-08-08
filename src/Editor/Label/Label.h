@@ -7,6 +7,8 @@
 #include <Entity.h>
 #include <Components.h>
 
+#include <Viewport.h>
+
 class Label : public Engine::Layer
 {
 public:
@@ -23,6 +25,7 @@ public:
 
 private:
 	int m_SelectedEntt = -1;
+	Render::Viewport* m_Viewport;
 
 	void DrawEntity(Engine::Entity& entity);
 };

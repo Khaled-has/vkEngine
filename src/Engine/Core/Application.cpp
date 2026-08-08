@@ -2,17 +2,19 @@
 
 #include "Timer.h"
 
-#include <imgui.h>
-#include <UI.h>
-
 #include "Layer.h"
+#include "Log.h"
 
 namespace Engine
 {
 
-	Application::Application(ApplicationInfo mInfo)
+	EngineCore* EngineCore::pInstance = nullptr;
+
+	Application::Application(EngineInfo mInfo)
 		: EngineCore(mInfo)
 	{
+		pInstance = this;
+		Log::Init();
 #ifdef WIN32
 		// # Create windows window
 		m_pAppWindow = CreateWindowsWindow({ .mTitle = mInfo.mProjName, .mWidth = 1440, .mHeight = 720 });
@@ -23,11 +25,8 @@ namespace Engine
 		m_pAppWindow->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
 		// # Create the renderer
-		m_pRenderer = CreateRenderer();
+		m_pRenderer = Render::CreateRenderer();
 		m_pRenderer->Initialize();
-
-		// # create GPU context
-		UI::CreateContext();
 
 		// # Create layer stack
 		m_pLayerStack = new LayerStack();
@@ -37,6 +36,13 @@ namespace Engine
 
 		// # Time start
 		Timer::Start();
+
+		// # Create application's context
+		EngineCore::m_pAppContext = EngineContext{
+			.pImContext = ImGui::GetCurrentContext(),
+			.pSceneContext = m_pSceneManager,
+			.pRendererContext = m_pRenderer
+		};
 	}
 
 	void Application::Run()
@@ -77,37 +83,22 @@ namespace Engine
 		m_pAppWindow->Exit();
 	}
 
-	void* Application::getImGuiContext()
-	{
-		return ImGui::GetCurrentContext();
-	}
-
-	void* Application::getGPUContext()
-	{
-		return UI::GetUIContext();
-	}
-
-	SceneManager* Application::getSceneContext()
-	{
-		return m_pSceneManager;
-	}
-
-	void Application::PushLayer(Layer* pLayer)
+	void Application::PushLayerImpl(Layer* pLayer)
 	{
 		m_pLayerStack->PushLayer_(pLayer);
 	}
 
-	void Application::CloseApplication()
+	void Application::CloseApplicationImpl()
 	{
 		m_AppRunning = false;
 	}
 
-	void Application::MaximizeApplication()
+	void Application::MaximizeApplicationImpl()
 	{
 		m_pAppWindow->Maximize();
 	}
 
-	void Application::MinimizeApplication()
+	void Application::MinimizeApplicationImpl()
 	{
 		m_pAppWindow->Minimize();
 	}

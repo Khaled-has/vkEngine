@@ -6,29 +6,35 @@
 
 #include <imgui.h>
 #include <UI.h>
+#include <Renderer.h>
 
 namespace Editor
 {
+    static void InitEngineSystems()
+    {
+        Engine::EngineContext ctx = Engine::EngineCore::getContext();
+
+        ImGui::SetCurrentContext(ctx.pImContext);
+        UI::SetUIContext(ctx.pUIContext);
+        Engine::SceneManager::SetCurrent(ctx.pSceneContext);
+        Render::Renderer::SetCurrent(ctx.pRendererContext);
+    }
 
     void Editor::Initialize(Engine::EngineCore* pCurrentEngine)
     {
-        pEngine = pCurrentEngine;
-        // # UI context
-        UI::SetUIContext(reinterpret_cast<UI::UIContext*>(pCurrentEngine->getGPUContext()));
-        // # ImGui context
-        ImGui::SetCurrentContext(reinterpret_cast<ImGuiContext*>(pCurrentEngine->getImGuiContext()));
-        // # Scene manager context
-        Engine::SceneManager::SetCurrent(pCurrentEngine->getSceneContext());
+        Engine::EngineCore::SetCurrent(pCurrentEngine);
+        InitEngineSystems();
+
         Engine::SceneManager::AddNewScene("test_scene");
         Engine::SceneManager::SelectActiveScene(0);
 
         // # Setup ImGui style
         SetupImGuiStyle();
 
-        pCurrentEngine->PushLayer(new TitleBar());
+        Engine::EngineCore::PushLayer(new TitleBar());
         Label* pLabel = new Label();
-        pCurrentEngine->PushLayer(pLabel);
-        pCurrentEngine->PushLayer(new Inspector(pLabel->getSelectedIndex()));
+        Engine::EngineCore::PushLayer(pLabel);
+        Engine::EngineCore::PushLayer(new Inspector(pLabel->getSelectedIndex()));
     }
 
     void Editor::SetupImGuiStyle()
@@ -43,7 +49,6 @@ namespace Editor
 
         // Font Style
         style.FontSizeBase = 22.0f;
-
 
         // Colors
         style.Colors[ImGuiCol_Button].w = 0.f;

@@ -14,28 +14,24 @@
 
 #include "Engine.h"
 
+#include <imgui.h>
 namespace Engine
 {
 
 	class VK_ENGINE_API Application : public EngineCore
 	{
 	public:
-		Application(ApplicationInfo mInfo);
+		Application(EngineInfo mInfo);
 		~Application() {}
 
 		virtual void Run() override;
 		virtual void Destroy() override;
 
-		virtual void* getImGuiContext() override;
-		virtual void* getGPUContext() override;
+		virtual void PushLayerImpl(Layer* pLayer) override;
 
-		virtual SceneManager* getSceneContext() override;
-
-		virtual void PushLayer(Layer* pLayer) override;
-
-		virtual void CloseApplication() override;
-		virtual void MaximizeApplication() override;
-		virtual void MinimizeApplication() override;
+		virtual void CloseApplicationImpl() override;
+		virtual void MaximizeApplicationImpl() override;
+		virtual void MinimizeApplicationImpl() override;
 
 	private:
 		Window* m_pAppWindow;
